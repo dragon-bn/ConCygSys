@@ -22,11 +22,12 @@ set CYGWIN_SETUP=
 set CYGWIN_MIRROR=http://ftp.inf.tu-dresden.de/software/windows/cygwin32
 
 :: select the packages to be installed automatically: https://cygwin.com/packages/package_list.html
-set CYGWIN_PACKAGES=bind-utils,curl,inetutils,openssh,openssl,vim,whois
+::set CYGWIN_PACKAGES=bind-utils,curl,inetutils,openssh,openssl,vim,whois
+set CYGWIN_PACKAGES=bind-utils,curl,inetutils,openssh,openssl,vim,whois,git,tig,gui-git,gitk
 
 :: Cygwin uses ACLs to implement real Unix permissions which are not supported by Windows: https://cygwin.com/cygwin-ug-net/using-filemodes.html
 :: However, if you move installation to different directory or PC, ACLs will be broken and will have troubles running Cygwin binaries
-:: Set to 'yes' if you want real Unix permissions to the detriment of portability
+:: Se1t to 'yes' if you want real Unix permissions to the detriment of portability
 :: Set to 'no' if you want fully portable environment
 :: Minimal permissions you will be able to set with disabled ACLs: "-r--r--r--" or "444"
 :: Maximal: "-rw-r--r--" or "644". Files with exe extension or beginning with shebang will automatically have 755 permissions
@@ -52,7 +53,7 @@ set INSTALL_SSH_AGENT_TWEAK=yes
 set INSTALL_BASHRC_CUSTOMS=yes
 
 :: install WSLbridge to allowing to access WSL via Mintty https://github.com/rprichard/wslbridge
-set INSTALL_WSLBRIDGE=yes
+set INSTALL_WSLBRIDGE=no
 
 :: install multitab terminal https://conemu.github.io/
 set INSTALL_CONEMU=yes
@@ -77,7 +78,8 @@ set MINTTY_OPTIONS=-o FontHeight=10 ^
 
 
 echo.
-set CONCYGSYS_LINK=https://github.com/zhubanRuban/ConCygSys
+:: set CONCYGSYS_LINK=https://github.com/zhubanRuban/ConCygSys
+set CONCYGSYS_LINK=https://github.com/dragon-bn/ConCygSys
 set CONCYGSYS_INFO=ConCygSys v.%CONCYGSYS_VERSION% %CONCYGSYS_LINK%
 echo [ %CONCYGSYS_INFO% ]
 echo.
@@ -191,12 +193,12 @@ echo CYGWIN_SETUP setting is empty, autodetecting...
 echo Chosen installer: %CYGWIN_SETUP%
 
 :: Removing existing setup.exe
-del "%CYGWIN_ROOT%\%CYGWIN_SETUP%" >NUL 2>&1
+:: del "%CYGWIN_ROOT%\%CYGWIN_SETUP%" >NUL 2>&1
 
 :: downloading Cygwin installer
 echo.
 cscript //Nologo "%DOWNLOADER%" http://cygwin.org/%CYGWIN_SETUP% "%CYGWIN_ROOT%\%CYGWIN_SETUP%" || goto :fail
-del "%DOWNLOADER%" >NUL 2>&1
+:: del "%DOWNLOADER%" >NUL 2>&1
 
 :: Cygwin command line options: https://cygwin.com/faq/faq.html#faq.setup.cli
 if "%PROXY_HOST%" == "" (
@@ -219,7 +221,7 @@ if "%INSTALL_APT_CYG%" == "yes" (
 if "%INSTALL_BASHRC_CUSTOMS%" == "yes" (
 	set INSTALL_BASH_FUNK=no
 )
-if "%INSTALL_BASH_FUNK%" == "yes" (
+if "%INSTALL_BASH_FUNK%" == "no" (
 	set CYGWIN_PACKAGES=git,git-svn,subversion,%CYGWIN_PACKAGES%
 )
 if "%INSTALL_PSSH%" == "yes" (
@@ -248,7 +250,7 @@ echo Running Cygwin setup...
 --packages dos2unix,wget,%CYGWIN_PACKAGES% || goto :fail
 
 :: deleting standard Cygwin launcher
-del "%CYGWIN_ROOT%\Cygwin.bat" >NUL 2>&1
+:: del "%CYGWIN_ROOT%\Cygwin.bat" >NUL 2>&1
 echo %CONCYGSYS_INFO% >"%CYGWIN_ROOT%\DO-NOT-LAUNCH-CYGWIN-FROM-HERE"
 
 if not "%UPDATECYGWINONLY%" == "" goto :aftercygwinupdate
@@ -368,7 +370,7 @@ echo Generating one-file settings and updater file [%Concygsys_settings%]...
 	echo start "" "%%INSTALLER%%" ^|^| goto :fail
 	echo exit 0
 	echo :fail
-	echo del "%%DOWNLOADER%%" ^>NUL 2^>^&1
+	:: echo del "%%DOWNLOADER%%" ^>NUL 2^>^&1
 	echo echo.
 	echo echo                       !!! Update FAILED !!!
 	echo echo Try uploading installer manually from %CONCYGSYS_LINK%
@@ -417,7 +419,7 @@ if "%INSTALL_CONEMU%" == "yes" (
 	) >"%Launch_conemu%" || goto :fail
 ) else (
 	echo Removing ConEmu launcher [%Launch_conemu%]...
-	del "%Launch_conemu%" >NUL 2>&1
+	:: del "%Launch_conemu%" >NUL 2>&1
 )
 
 set Launch_mintty=%INSTALL_ROOT%Cygwin-Mintty.cmd
@@ -441,7 +443,7 @@ if "%INSTALL_WSLBRIDGE%" == "yes" (
 	) >"%Launch_wsltty%" || goto :fail
 ) else (
 	echo Removing WSLtty launcher [%Launch_wsltty%]...
-	del "%Launch_wsltty%" >NUL 2>&1
+	:: del "%Launch_wsltty%" >NUL 2>&1
 )
 
 echo.
@@ -603,7 +605,7 @@ echo Creating script to install required and additional software [%Post_install%
 
 echo Launching post-install script...
 "%CYGWIN_ROOT%\bin\bash" "%Post_install%" || goto :fail
-del "%Post_install%" >NUL 2>&1
+:: del "%Post_install%" >NUL 2>&1
 
 
 set Conemu_config=%INSTALL_ROOT%conemu\ConEmu.xml
@@ -729,12 +731,12 @@ echo.
 echo Cleaning up...
 :: deleting obsolete files used by previous concygsys versions
 rd /s /q "%INSTALL_ROOT%data" >NUL 2>&1
-del "%CYGWIN_ROOT%\updater.cmd" >NUL 2>&1
-del "%CYGWIN_ROOT%\cygwin-settings.cmd" >NUL 2>&1
-del "%CYGWIN_ROOT%\cygwin-install-options.cmd" >NUL 2>&1
+:: del "%CYGWIN_ROOT%\updater.cmd" >NUL 2>&1
+:: del "%CYGWIN_ROOT%\cygwin-settings.cmd" >NUL 2>&1
+:: del "%CYGWIN_ROOT%\cygwin-install-options.cmd" >NUL 2>&1
 :: delting readme and licence files
-del "%INSTALL_ROOT%LICENSE" >NUL 2>&1
-del "%INSTALL_ROOT%README.md" >NUL 2>&1
+:: del "%INSTALL_ROOT%LICENSE" >NUL 2>&1
+:: del "%INSTALL_ROOT%README.md" >NUL 2>&1
 (
 	echo %CONCYGSYS_INFO%
 	echo Project page and Documentation:
@@ -754,7 +756,7 @@ echo  Use launchers in [%INSTALL_ROOT%] to run Cygwin Portable.
 echo.
 pause
 :: deleting installer and old launchers
-del "%INSTALL_ROOT%ConCygSys*" >NUL 2>&1
+:: del "%INSTALL_ROOT%ConCygSys*" >NUL 2>&1
 exit 0
 
 
